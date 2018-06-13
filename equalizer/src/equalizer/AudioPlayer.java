@@ -6,12 +6,12 @@ import java.math.*;
 import java.nio.ByteBuffer;
 
 public class AudioPlayer {
-	private final int MAX_BUFF_SIZE = 44100;
+	private final int MAX_BUFF_SIZE = 5000;
 	private byte[] buffer; //Используется для хранения битовых отсчетов, по два бита на один отсчет
 	private short[] sampleBuffer; //Используется для хранения отсчетов 1 шорт на один отсчет
 	private SourceDataLine audioLine;
 	private boolean isPaused = false;
-	private boolean echoActive = false;
+	public boolean echoActive = false;
 	private LineListener listener;
 	private AudioInputStream ais;
 	private File apFile;
@@ -72,28 +72,17 @@ public class AudioPlayer {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				int number = ais.read(buffer);
+				int number;
+				Echo echoEffect = new Echo();
 				audioLine.start();
 				while (((number = ais.read(buffer)) != -1)&&(!this.isInterrupted())) {
+					if (echoActive) {
+						byteToShortArray(buffer);
+						sampleBuffer = echoEffect.createEffect(sampleBuffer);
+						shortToByteArray(sampleBuffer);					
+					}
+					else echoEffect.endEffect(!echoActive);
 					audioLine.write(buffer, 0, number);
-					/*System.out.println("Buffer1");
-					for (int counter = 0; counter < 10; ++counter) {
-						System.out.print(buffer[counter]);
-						System.out.print(' ');
-					}
-					byteToShortArray(buffer);
-					shortToByteArray(sampleBuffer);
-					System.out.println("Buffer2");
-					for (int counter = 0; counter < 10; ++counter) {
-						System.out.print(buffer[counter]);
-						System.out.print(' ');
-					}
-					System.out.println("BufferSample");
-					for (int counter = 0; counter < 5; ++counter) {
-						System.out.print(sampleBuffer[counter]);
-						System.out.print(' ');
-					}
-					*/
 				}
 			} catch (IOException e) {
 					e.printStackTrace();
@@ -115,8 +104,8 @@ public class AudioPlayer {
 		int sampleCounter = 0;
 		ByteBuffer conversion = ByteBuffer.allocate(2);
 		for (int counter = 0; counter < array.length-1; counter += 2) {
-			conversion.put(0, array[counter]);
-			conversion.put(1, array[counter + 1]);
+			conversion.put(1, array[counter]);
+			conversion.put(0, array[counter + 1]);
 			sampleBuffer[sampleCounter] = conversion.getShort(0);
 			++sampleCounter;
 		}
@@ -127,8 +116,8 @@ public class AudioPlayer {
 		ByteBuffer conversion = ByteBuffer.allocate(2);
 		for (int counter = 0; counter < array.length-1; ++counter) {
 			conversion.putShort(0, array[counter]);
-			buffer[byteCounter] = conversion.get(0);
-			buffer[byteCounter + 1] = conversion.get(1);
+			buffer[byteCounter] = (byte)(array[counter]);
+			buffer[byteCounter + 1] = (byte)(array[counter] >> 8);
 			byteCounter += 2;
 		}
 		return buffer;

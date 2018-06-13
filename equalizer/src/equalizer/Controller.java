@@ -88,9 +88,11 @@ public class Controller implements ActionListener, ChangeListener, ItemListener 
 		if (((JCheckBox)e.getSource()) == GUI.getEchoCheckBox()) {
 			if (e.getStateChange() == ItemEvent.SELECTED) {
 				//Добавить включение эффекта ЭХО
+				aPlayer.echoActive = true;
 			}
 			else {
 				//Добавить выключение эффекта ЭХО
+				aPlayer.echoActive = false;
 			}
 		}
 		if (((JCheckBox)e.getSource()) == GUI.getOverdriveCheckBox()) {
