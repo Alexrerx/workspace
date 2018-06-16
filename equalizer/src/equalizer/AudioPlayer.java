@@ -6,7 +6,7 @@ import java.math.*;
 import java.nio.ByteBuffer;
 
 public class AudioPlayer {
-	private final int MAX_BUFF_SIZE = 5000;
+	private final int MAX_BUFF_SIZE = 44100;
 	private byte[] buffer; //Используется для хранения битовых отсчетов, по два бита на один отсчет
 	private short[] sampleBuffer; //Используется для хранения отсчетов 1 шорт на один отсчет
 	private SourceDataLine audioLine;
@@ -121,6 +121,9 @@ public class AudioPlayer {
 			byteCounter += 2;
 		}
 		return buffer;
+	}
+	public int getSamplingFreq() {
+		return MAX_BUFF_SIZE;
 	}
 	
 }
