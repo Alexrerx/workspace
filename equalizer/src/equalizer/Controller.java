@@ -1,5 +1,7 @@
 package equalizer;
 
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -8,9 +10,18 @@ import java.io.*;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JSlider;
+import javax.swing.SwingUtilities;
 import javax.swing.JFileChooser;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 
 public class Controller implements ActionListener, ChangeListener, ItemListener {
 	private View GUI;
@@ -36,12 +47,14 @@ public class Controller implements ActionListener, ChangeListener, ItemListener 
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		Spectrogram spec = new Spectrogram();
+		SwingUtilities.invokeLater(spec);
 		if (((JButton)e.getSource()) == GUI.getPlayButton()) {
 			if (!isPlaying) {
-				//Добавить запуск аудиозаписи
 				aPlayer.play();
 				isPlaying = true;
 				GUI.getPlayButton().setText("Pause");
+				spec.start();
 			}
 			else {
 				//Добавить паузу аудиозаписи
@@ -104,4 +117,40 @@ public class Controller implements ActionListener, ChangeListener, ItemListener 
 			}	
 		}
 	}
+	class Spectrogram extends Thread {
+		public void run() {
+			short[] samplesBuffer;
+			FFT fft = new FFT();
+			XYSeries spectrPlot;
+			XYDataset spectrPlotData;
+			JFreeChart spectr;
+			double[] amplitudes;
+			while(aPlayer.getThread().isAlive()) {
+				if (aPlayer.spectrBeforeIsUpdated()) {
+					try {
+						aPlayer.getThread().sleep(50);
+						samplesBuffer = aPlayer.getSampledBuffer();
+						fft.setOffsets(samplesBuffer);
+						amplitudes = fft.getSpectrumAmpl();
+						spectrPlot = new XYSeries("Input");
+						for (int counter = 0; counter < 0; counter += 500) {
+							spectrPlot.add(counter / 1000, 20*Math.log10(amplitudes[counter]));
+						}
+						spectrPlotData = new XYSeriesCollection(spectrPlot);
+						spectr = ChartFactory.createXYLineChart("Input",
+								"Freq, kHz", "Amplitude, dB", spectrPlotData, PlotOrientation.VERTICAL,
+								true, false, false);
+						GUI.spectrogramBefore =  new ChartPanel(spectr);
+						GUI.spectrogramBefore.setPreferredSize(new Dimension(700, 700));
+						GUI.repaint();
+						this.sleep(1000);
+					} 
+					catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
 }
+

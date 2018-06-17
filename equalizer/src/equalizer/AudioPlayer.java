@@ -6,12 +6,14 @@ import java.math.*;
 import java.nio.ByteBuffer;
 
 public class AudioPlayer {
-	private final int MAX_BUFF_SIZE = 44100;
+	private final int MAX_BUFF_SIZE = 8000;
 	private byte[] buffer; //Используется для хранения битовых отсчетов, по два бита на один отсчет
 	private short[] sampleBuffer; //Используется для хранения отсчетов 1 шорт на один отсчет
 	private SourceDataLine audioLine;
 	private boolean isPaused = false;
 	public boolean echoActive = false;
+	private boolean spectrBeforeUpdated = false;
+	private boolean spectrAfterUpdated = false;
 	private LineListener listener;
 	private AudioInputStream ais;
 	private File apFile;
@@ -76,13 +78,17 @@ public class AudioPlayer {
 				Echo echoEffect = new Echo();
 				audioLine.start();
 				while (((number = ais.read(buffer)) != -1)&&(!this.isInterrupted())) {
+					spectrBeforeUpdated = true;
 					if (echoActive) {
 						byteToShortArray(buffer);
 						sampleBuffer = echoEffect.createEffect(sampleBuffer);
 						shortToByteArray(sampleBuffer);					
 					}
 					else echoEffect.endEffect(!echoActive);
+					spectrAfterUpdated = true;
 					audioLine.write(buffer, 0, number);
+					spectrBeforeUpdated = false;
+					spectrAfterUpdated = false;
 				}
 			} catch (IOException e) {
 					e.printStackTrace();
@@ -125,5 +131,16 @@ public class AudioPlayer {
 	public int getSamplingFreq() {
 		return MAX_BUFF_SIZE;
 	}
-	
+	public boolean spectrAfterIsUpdated() {
+		return spectrAfterUpdated;
+	}
+	public boolean spectrBeforeIsUpdated() {
+		return spectrBeforeUpdated;
+	}
+	public Thread getThread() {
+		return at;
+	}
+	public short[] getSampledBuffer() {
+		return sampleBuffer;
+	}
 }

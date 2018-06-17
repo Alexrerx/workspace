@@ -9,6 +9,15 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import static javax.swing.GroupLayout.Alignment.*;
@@ -23,8 +32,17 @@ import java.util.Hashtable;
 
 public class View extends JFrame {
 	private JButton playButton, stopButton, openFileButton;
-	private JSlider filter1Slider, filter2Slider;
+	private JSlider filter1Slider, filter2Slider, filter3Slider;
+	private JSlider filter4Slider, filter5Slider, filter6Slider;
 	private JCheckBox echoCheckBox, overdriveCheckBox;
+	public ChartPanel spectrogramBefore;
+	private ChartPanel spectrogramAfter;
+	private JFreeChart spectrBefore;
+	private JFreeChart spectrAfter;
+	private XYSeries spectrPlotBefore;
+	private XYSeries spectrPlotAfter;
+	private XYDataset spectrPlotDataBefore;
+	private XYDataset spectrPlotDataAfter;
 	final static int sW = 5; // Ширина слайдеров
 	final static int sH = 80; // Высота слайдеров
 	final static int cW = 5;	//Ширина чекбокса
@@ -50,11 +68,19 @@ public class View extends JFrame {
         			.addComponent(openFileButton)
         			.addComponent(playButton)
         			.addComponent(echoCheckBox)
-        			.addComponent(filter1Slider))
+        			.addGroup(layout.createSequentialGroup()
+        					.addComponent(filter1Slider)
+        					.addComponent(filter2Slider)
+        					.addComponent(filter3Slider))
+        			.addComponent(spectrogramAfter))
         	.addGroup(layout.createParallelGroup(CENTER)
         			.addComponent(stopButton)
         			.addComponent(overdriveCheckBox)
-        			.addComponent(filter2Slider))
+        			.addGroup(layout.createSequentialGroup()
+        				.addComponent(filter4Slider)
+        				.addComponent(filter5Slider)
+        				.addComponent(filter6Slider))
+        			.addComponent(spectrogramBefore))
         );
         layout.setVerticalGroup(layout.createSequentialGroup()
         	.addComponent(openFileButton)
@@ -66,7 +92,14 @@ public class View extends JFrame {
         			.addComponent(overdriveCheckBox))
         	.addGroup(layout.createParallelGroup(BASELINE)
         			.addComponent(filter1Slider)
-        			.addComponent(filter2Slider))
+        			.addComponent(filter2Slider)
+        			.addComponent(filter3Slider)
+        			.addComponent(filter4Slider)
+        			.addComponent(filter5Slider)
+        			.addComponent(filter6Slider))
+        	.addGroup(layout.createParallelGroup(BASELINE)
+        			.addComponent(spectrogramAfter)
+        			.addComponent(spectrogramBefore))
         );
 		frame.pack();
 		frame.setVisible(true);
@@ -74,6 +107,20 @@ public class View extends JFrame {
 	}
 	
 	private void initializeComponents() {
+		spectrPlotBefore = new XYSeries("Input");
+		spectrPlotAfter = new XYSeries("Output");
+		spectrPlotDataBefore = new XYSeriesCollection(spectrPlotBefore);
+		spectrPlotDataAfter = new XYSeriesCollection(spectrPlotAfter);
+		spectrBefore = ChartFactory.createXYLineChart("Input",
+				"Freq, kHz", "Amplitude, dB", spectrPlotDataBefore, PlotOrientation.VERTICAL,
+				true, false, false);
+		spectrAfter = ChartFactory.createXYLineChart("Output",
+				"Freq, kHz", "Amplitude, dB", spectrPlotDataAfter, PlotOrientation.VERTICAL,
+				true, false, false);
+		spectrogramBefore = new ChartPanel(spectrBefore);
+		spectrogramAfter = new ChartPanel(spectrAfter);
+		spectrogramBefore.setPreferredSize(new Dimension(700, 700));
+		spectrogramAfter.setPreferredSize(new Dimension(700, 700));
 		playButton = new JButton("Play");
 		stopButton = new JButton("Stop");
 		openFileButton = new JButton("Open File");
@@ -87,6 +134,18 @@ public class View extends JFrame {
 		filter2Slider.setLabelTable(labelTable);
 		filter1Slider.setPaintLabels(true);
 		filter2Slider.setPaintLabels(true);
+		filter3Slider = new JSlider(JSlider.VERTICAL, FPS_MIN, FPS_MAX, FPS_INIT);
+		filter4Slider = new JSlider(JSlider.VERTICAL, FPS_MIN, FPS_MAX, FPS_INIT);
+		filter3Slider.setLabelTable(labelTable);
+		filter4Slider.setLabelTable(labelTable);
+		filter3Slider.setPaintLabels(true);
+		filter4Slider.setPaintLabels(true);
+		filter5Slider = new JSlider(JSlider.VERTICAL, FPS_MIN, FPS_MAX, FPS_INIT);
+		filter6Slider = new JSlider(JSlider.VERTICAL, FPS_MIN, FPS_MAX, FPS_INIT);
+		filter5Slider.setLabelTable(labelTable);
+		filter6Slider.setLabelTable(labelTable);
+		filter5Slider.setPaintLabels(true);
+		filter6Slider.setPaintLabels(true);
 		echoCheckBox = new JCheckBox("Echo");
 		overdriveCheckBox = new JCheckBox("Overdrive");
 		
@@ -119,12 +178,36 @@ public class View extends JFrame {
 		return filter2Slider;
 	}
 	
+	public JSlider getFilter3Slider() {
+		return filter1Slider;
+	}
+	
+	public JSlider getFilter4Slider() {
+		return filter2Slider;
+	}
+	
+	public JSlider getFilter5Slider() {
+		return filter1Slider;
+	}
+	
+	public JSlider getFilter6Slider() {
+		return filter2Slider;
+	}
+	
 	public JCheckBox getEchoCheckBox() {
 		return echoCheckBox;
 	}
 	
 	public JCheckBox getOverdriveCheckBox() {
 		return overdriveCheckBox;
+	}
+	
+	public ChartPanel getSpectrBefore() {
+		return spectrogramBefore;
+	}
+	
+	public ChartPanel getSpectrAfter() {
+		return spectrogramAfter;
 	}
 	
 	public static void main(String[] args) { 

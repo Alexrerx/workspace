@@ -15,7 +15,8 @@ public class FFT {
 	double[] reFFTOffsets;
 	double[] imaFFTOffsets;
 	double[] spectrAmplitude;
-	final private int MAX_SPECTRUM_FREQUENCY = 44100;
+	final private int step = 500;
+	final private int MAX_SPECTRUM_FREQUENCY = 22000;
 	public FFT(){
 		reFFTOffsets = new double[MAX_SPECTRUM_FREQUENCY];
 		imaFFTOffsets = new double[MAX_SPECTRUM_FREQUENCY];
@@ -26,7 +27,7 @@ public class FFT {
 	}
 	private void setAmplitude() {
 		double offsetsSquared;
-		for (int counter = 0; counter < MAX_SPECTRUM_FREQUENCY; ++counter) {
+		for (int counter = 0; counter < MAX_SPECTRUM_FREQUENCY; counter += step) {
 			offsetsSquared = Math.pow(reFFTOffsets[counter], 2)  + Math.pow(imaFFTOffsets[counter], 2);
 			spectrAmplitude[counter] = Math.pow(offsetsSquared, 0.5);
 		}
@@ -70,7 +71,7 @@ public class FFT {
 	private void setReFFTOffsets() {
 		double ReOffset = 0;
 		double ReOffsetPlusHalfN = 0;
-		for (int counter = 0; counter < MAX_SPECTRUM_FREQUENCY - offsets.length / 2; ++counter) {
+		for (int counter = 0; counter < MAX_SPECTRUM_FREQUENCY - offsets.length / 2; counter += step) {
 			ReOffset = S0re(counter) + Wre(counter, offsets.length) * S1re(counter);
 			ReOffsetPlusHalfN = S0re(counter) - Wre(counter, offsets.length) * S1re(counter);
 			reFFTOffsets[counter] = ReOffset;
@@ -81,7 +82,7 @@ public class FFT {
 	private void setImFFTOffsets() {
 		double ImOffset = 0;
 		double ImOffsetPlusHalfN = 0;
-		for (int counter = 0; counter < MAX_SPECTRUM_FREQUENCY - offsets.length / 2; ++counter) {
+		for (int counter = 0; counter < MAX_SPECTRUM_FREQUENCY - offsets.length / 2; counter += step) {
 			ImOffset = S0im(counter) + Wim(counter, offsets.length) * S1im(counter);
 			ImOffsetPlusHalfN = S0im(counter) - Wim(counter, offsets.length) * S1im(counter);
 			reFFTOffsets[counter] = ImOffset;
