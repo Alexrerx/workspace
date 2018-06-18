@@ -6,7 +6,7 @@ import java.math.*;
 import java.nio.ByteBuffer;
 
 public class AudioPlayer {
-	private final int MAX_BUFF_SIZE = 8000;
+	private final int MAX_BUFF_SIZE = 44000;
 	private byte[] buffer; //Используется для хранения битовых отсчетов, по два бита на один отсчет
 	private short[] sampleBuffer; //Используется для хранения отсчетов 1 шорт на один отсчет
 	private SourceDataLine audioLine;
@@ -14,6 +14,8 @@ public class AudioPlayer {
 	public boolean echoActive = false;
 	private boolean spectrBeforeUpdated = false;
 	private boolean spectrAfterUpdated = false;
+	private double[] fftOffsetsBefore;
+	private double[] fftOffsetsAfter;
 	private LineListener listener;
 	private AudioInputStream ais;
 	private File apFile;
@@ -65,6 +67,7 @@ public class AudioPlayer {
 	public class AudioThread extends Thread {
 		public boolean runs = false;
 		public void run() {
+			//FFT fft = new FFT();
 			runs = true;
 			try {
 				ais.close();
@@ -78,9 +81,9 @@ public class AudioPlayer {
 				Echo echoEffect = new Echo();
 				audioLine.start();
 				while (((number = ais.read(buffer)) != -1)&&(!this.isInterrupted())) {
+					byteToShortArray(buffer);
 					spectrBeforeUpdated = true;
 					if (echoActive) {
-						byteToShortArray(buffer);
 						sampleBuffer = echoEffect.createEffect(sampleBuffer);
 						shortToByteArray(sampleBuffer);					
 					}

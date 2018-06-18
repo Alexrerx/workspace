@@ -7,10 +7,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.*;
+import java.util.concurrent.ExecutionException;
+
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JSlider;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.JFileChooser;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -54,7 +57,7 @@ public class Controller implements ActionListener, ChangeListener, ItemListener 
 				aPlayer.play();
 				isPlaying = true;
 				GUI.getPlayButton().setText("Pause");
-				spec.start();
+				fuckingRun();
 			}
 			else {
 				//Добавить паузу аудиозаписи
@@ -117,6 +120,11 @@ public class Controller implements ActionListener, ChangeListener, ItemListener 
 			}	
 		}
 	}
+	
+	private void fuckingRun() {
+		new Spectrogram().start();
+	}
+	
 	class Spectrogram extends Thread {
 		public void run() {
 			short[] samplesBuffer;
@@ -124,26 +132,34 @@ public class Controller implements ActionListener, ChangeListener, ItemListener 
 			XYSeries spectrPlot;
 			XYDataset spectrPlotData;
 			JFreeChart spectr;
+			int tryF = 1;
 			double[] amplitudes;
+			if (aPlayer.getThread() == null) {
+				for(;;) {
+					if (aPlayer != null) break;
+				}
+			}
 			while(aPlayer.getThread().isAlive()) {
 				if (aPlayer.spectrBeforeIsUpdated()) {
 					try {
-						aPlayer.getThread().sleep(50);
+						aPlayer.getThread().sleep(100);
 						samplesBuffer = aPlayer.getSampledBuffer();
 						fft.setOffsets(samplesBuffer);
 						amplitudes = fft.getSpectrumAmpl();
 						spectrPlot = new XYSeries("Input");
-						for (int counter = 0; counter < 0; counter += 500) {
-							spectrPlot.add(counter / 1000, 20*Math.log10(amplitudes[counter]));
+						for (int counter = 1; counter < 13000; counter += 1000) {
+							spectrPlot.add(counter, 20*Math.log10(Math.abs(amplitudes[counter])));
 						}
+						System.out.println(amplitudes[1]);
+						++tryF;
 						spectrPlotData = new XYSeriesCollection(spectrPlot);
 						spectr = ChartFactory.createXYLineChart("Input",
 								"Freq, kHz", "Amplitude, dB", spectrPlotData, PlotOrientation.VERTICAL,
 								true, false, false);
-						GUI.spectrogramBefore =  new ChartPanel(spectr);
-						GUI.spectrogramBefore.setPreferredSize(new Dimension(700, 700));
-						GUI.repaint();
-						this.sleep(1000);
+						GUI.updateChartBefore(ChartFactory.createXYLineChart("Input",
+								"Freq, kHz", "Amplitude, dB", spectrPlotData, PlotOrientation.VERTICAL,
+								true, false, false));
+						GUI.spectrogramBefore.updateUI();
 					} 
 					catch (InterruptedException e) {
 						e.printStackTrace();
@@ -152,5 +168,48 @@ public class Controller implements ActionListener, ChangeListener, ItemListener 
 			}
 		}
 	}
+	/*class Spectrogram extends SwingWorker<JFreeChart, Integer> {
+		@Override
+		protected JFreeChart doInBackground() throws Exception {
+			short[] samplesBuffer;
+			FFT fft = new FFT();
+			XYSeries spectrPlot;
+			XYDataset spectrPlotData;
+			JFreeChart spectr = null;
+			double[] amplitudes;
+			while (aPlayer.getThread() == null) {
+			}
+			while (aPlayer.getThread().isAlive()) {
+				if (aPlayer.spectrBeforeIsUpdated()) {
+					aPlayer.getThread().sleep(50);
+					samplesBuffer = aPlayer.getSampledBuffer();
+					fft.setOffsets(samplesBuffer);
+					amplitudes = fft.getSpectrumAmpl();
+					spectrPlot = new XYSeries("Input");
+					for (int counter = 0; counter < 0; counter += 500) {
+						spectrPlot.add(counter / 1000, 20*Math.log10(amplitudes[counter]));
+					}
+					spectrPlotData = new XYSeriesCollection(spectrPlot);
+					spectr = ChartFactory.createXYLineChart("Input",
+							"Freq, kHz", "Amplitude, dB", spectrPlotData, PlotOrientation.VERTICAL,
+							true, false, false);
+					return spectr;
+				}
+			}
+			return spectr;
+		}
+		@Override
+		protected void done() {
+			try {
+				GUI.spectrogramBefore =  new ChartPanel(get());
+				GUI.spectrogramBefore.setPreferredSize(new Dimension(700, 700));
+				GUI.revalidate();
+			} catch (InterruptedException | ExecutionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return;
+		}
+	}*/
 }
 

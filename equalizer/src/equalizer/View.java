@@ -210,6 +210,11 @@ public class View extends JFrame {
 		return spectrogramAfter;
 	}
 	
+	public void updateChartBefore(JFreeChart input) {
+		spectrogramBefore.setChart(input);
+		spectrBefore = input;
+	}
+	
 	public static void main(String[] args) { 
 	        try { 
 	            UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel"); 
@@ -230,6 +235,6 @@ public class View extends JFrame {
 	               new View(); 
 	            } 
 	        }); 
-	    } 
+	} 
 } 
 
