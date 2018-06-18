@@ -15,7 +15,7 @@ public class FFT {
 	double[] reFFTOffsets;
 	double[] imaFFTOffsets;
 	double[] spectrAmplitude;
-	final private int step = 1000;
+	final private int step = 100;
 	final private int MAX_SPECTRUM_FREQUENCY = 22000;
 	public FFT(){
 		reFFTOffsets = new double[MAX_SPECTRUM_FREQUENCY];

@@ -13,7 +13,10 @@ import javax.swing.UnsupportedLookAndFeelException;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -117,6 +120,20 @@ public class View extends JFrame {
 		spectrAfter = ChartFactory.createXYLineChart("Output",
 				"Freq, kHz", "Amplitude, dB", spectrPlotDataAfter, PlotOrientation.VERTICAL,
 				true, false, false);
+        XYPlot xyPlotBefore = (XYPlot) spectrBefore.getPlot();
+        xyPlotBefore.setDomainCrosshairVisible(true);
+        xyPlotBefore.setRangeCrosshairVisible(true);
+        NumberAxis domainXBefore = (NumberAxis) xyPlotBefore.getDomainAxis();
+        domainXBefore.setRange(0.00, 22000.00);
+        NumberAxis domainYBefore = (NumberAxis) xyPlotBefore.getRangeAxis();
+        domainYBefore.setRange(0.00, 200.00);
+        XYPlot xyPlotAfter = (XYPlot) spectrAfter.getPlot();
+        xyPlotAfter.setDomainCrosshairVisible(true);
+        xyPlotAfter.setRangeCrosshairVisible(true);
+        NumberAxis domainXAfter = (NumberAxis) xyPlotBefore.getDomainAxis();
+        domainXAfter.setRange(0.00, 22000.00);
+        NumberAxis domainYAfter = (NumberAxis) xyPlotBefore.getRangeAxis();
+        domainYAfter.setRange(0.00, 200.00);
 		spectrogramBefore = new ChartPanel(spectrBefore);
 		spectrogramAfter = new ChartPanel(spectrAfter);
 		spectrogramBefore.setPreferredSize(new Dimension(700, 700));

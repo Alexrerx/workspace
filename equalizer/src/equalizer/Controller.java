@@ -50,14 +50,13 @@ public class Controller implements ActionListener, ChangeListener, ItemListener 
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		Spectrogram spec = new Spectrogram();
-		SwingUtilities.invokeLater(spec);
 		if (((JButton)e.getSource()) == GUI.getPlayButton()) {
 			if (!isPlaying) {
 				aPlayer.play();
 				isPlaying = true;
 				GUI.getPlayButton().setText("Pause");
-				fuckingRun();
+				Spectrogram spec = new Spectrogram(GUI, aPlayer);
+				spec.RunForest();
 			}
 			else {
 				//Добавить паузу аудиозаписи
@@ -120,54 +119,7 @@ public class Controller implements ActionListener, ChangeListener, ItemListener 
 			}	
 		}
 	}
-	
-	private void fuckingRun() {
-		new Spectrogram().start();
-	}
-	
-	class Spectrogram extends Thread {
-		public void run() {
-			short[] samplesBuffer;
-			FFT fft = new FFT();
-			XYSeries spectrPlot;
-			XYDataset spectrPlotData;
-			JFreeChart spectr;
-			int tryF = 1;
-			double[] amplitudes;
-			if (aPlayer.getThread() == null) {
-				for(;;) {
-					if (aPlayer != null) break;
-				}
-			}
-			while(aPlayer.getThread().isAlive()) {
-				if (aPlayer.spectrBeforeIsUpdated()) {
-					try {
-						aPlayer.getThread().sleep(100);
-						samplesBuffer = aPlayer.getSampledBuffer();
-						fft.setOffsets(samplesBuffer);
-						amplitudes = fft.getSpectrumAmpl();
-						spectrPlot = new XYSeries("Input");
-						for (int counter = 1; counter < 13000; counter += 1000) {
-							spectrPlot.add(counter, 20*Math.log10(Math.abs(amplitudes[counter])));
-						}
-						System.out.println(amplitudes[1]);
-						++tryF;
-						spectrPlotData = new XYSeriesCollection(spectrPlot);
-						spectr = ChartFactory.createXYLineChart("Input",
-								"Freq, kHz", "Amplitude, dB", spectrPlotData, PlotOrientation.VERTICAL,
-								true, false, false);
-						GUI.updateChartBefore(ChartFactory.createXYLineChart("Input",
-								"Freq, kHz", "Amplitude, dB", spectrPlotData, PlotOrientation.VERTICAL,
-								true, false, false));
-						GUI.spectrogramBefore.updateUI();
-					} 
-					catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-	}
+}
 	/*class Spectrogram extends SwingWorker<JFreeChart, Integer> {
 		@Override
 		protected JFreeChart doInBackground() throws Exception {
@@ -211,5 +163,5 @@ public class Controller implements ActionListener, ChangeListener, ItemListener 
 			return;
 		}
 	}*/
-}
+
 
