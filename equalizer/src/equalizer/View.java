@@ -39,7 +39,7 @@ public class View extends JFrame {
 	private JSlider filter4Slider, filter5Slider, filter6Slider;
 	private JCheckBox echoCheckBox, overdriveCheckBox;
 	public ChartPanel spectrogramBefore;
-	private ChartPanel spectrogramAfter;
+	public ChartPanel spectrogramAfter;
 	private JFreeChart spectrBefore;
 	private JFreeChart spectrAfter;
 	private XYSeries spectrPlotBefore;
@@ -130,9 +130,9 @@ public class View extends JFrame {
         XYPlot xyPlotAfter = (XYPlot) spectrAfter.getPlot();
         xyPlotAfter.setDomainCrosshairVisible(true);
         xyPlotAfter.setRangeCrosshairVisible(true);
-        NumberAxis domainXAfter = (NumberAxis) xyPlotBefore.getDomainAxis();
+        NumberAxis domainXAfter = (NumberAxis) xyPlotAfter.getDomainAxis();
         domainXAfter.setRange(0.00, 22000.00);
-        NumberAxis domainYAfter = (NumberAxis) xyPlotBefore.getRangeAxis();
+        NumberAxis domainYAfter = (NumberAxis) xyPlotAfter.getRangeAxis();
         domainYAfter.setRange(0.00, 200.00);
 		spectrogramBefore = new ChartPanel(spectrBefore);
 		spectrogramAfter = new ChartPanel(spectrAfter);

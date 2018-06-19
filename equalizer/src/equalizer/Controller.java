@@ -32,6 +32,7 @@ public class Controller implements ActionListener, ChangeListener, ItemListener 
 	JFileChooser fileOpen;
 	File file;
 	AudioPlayer aPlayer;
+	private final int numberOfChannels = 2;
 	
 	public Controller() {
 		this.GUI = new View();

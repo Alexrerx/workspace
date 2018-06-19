@@ -23,8 +23,10 @@ public class Spectrogram {
 		public void run() {
 			short[] samplesBuffer;
 			FFT fft = new FFT();
-			XYSeries spectrPlot;
-			JFreeChart spectr;
+			XYSeries spectrPlotInput = new XYSeries("Input");
+			XYSeries spectrPlotOutput = new XYSeries("Output");
+			GUIclone.getSpectrBefore().getChart().getXYPlot().setDataset(new XYSeriesCollection(spectrPlotInput));
+			GUIclone.getSpectrAfter().getChart().getXYPlot().setDataset(new XYSeriesCollection(spectrPlotOutput));
 			int counter = 0;
 			double[] amplitudes;
 			if (aPlayerClone.getThread() == null) {
@@ -34,15 +36,25 @@ public class Spectrogram {
 			}
 			while(aPlayerClone.getThread().isAlive()) {
 				if (aPlayerClone.spectrBeforeIsUpdated()) {
-					//samplesBuffer = aPlayerClone.getSampledBuffer();
-					//fft.setOffsets(samplesBuffer);
-					//amplitudes = fft.getSpectrumAmpl();
-					spectrPlot = new XYSeries("Input");
-					for (counter = 1; counter < 22000; counter += 100) {
-						spectrPlot.add(counter, 20*Math.log10(Math.abs(Math.ceil(counter/*amplitudes[counter]*/))));
+					samplesBuffer = aPlayerClone.getSampledBuffer();
+					fft.setOffsets(samplesBuffer);
+					amplitudes = fft.getSpectrumAmpl();
+					spectrPlotInput.clear();
+					for (counter = 0; counter < 22000; counter += 100) {
+						spectrPlotInput.add(counter, 20*Math.log10(Math.abs(Math.ceil(amplitudes[counter]))));
 					}
-					GUIclone.getSpectrBefore().getChart().getXYPlot().setDataset(new XYSeriesCollection(spectrPlot));
 					GUIclone.spectrogramBefore.updateUI();
+					System.gc();
+				}
+				if (aPlayerClone.spectrAfterIsUpdated()) {
+					samplesBuffer = aPlayerClone.getSampledBuffer();
+					fft.setOffsets(samplesBuffer);
+					amplitudes = fft.getSpectrumAmpl();
+					spectrPlotOutput.clear();
+					for (counter = 0; counter < 22000; counter += 100) {
+						spectrPlotOutput.add(counter, 20*Math.log10(Math.abs(Math.ceil(amplitudes[counter]))));
+					}
+					GUIclone.spectrogramAfter.updateUI();
 					System.gc();
 				}
 			}
@@ -50,16 +62,6 @@ public class Spectrogram {
 	}
 	public void RunForest() {
 		spT = new SpectrogramThread();
-		try {
-			SwingUtilities.invokeAndWait(spT);
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		//SwingUtilities.invokeLater(spT);
 		spT.start();
 	}
 }

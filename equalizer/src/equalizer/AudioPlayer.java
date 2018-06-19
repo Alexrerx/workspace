@@ -6,14 +6,14 @@ import java.math.*;
 import java.nio.ByteBuffer;
 
 public class AudioPlayer {
-	private final int MAX_BUFF_SIZE = 44000;
-	private byte[] buffer; //Используется для хранения битовых отсчетов, по два бита на один отсчет
-	private short[] sampleBuffer; //Используется для хранения отсчетов 1 шорт на один отсчет
+	private final int MAX_BUFF_SIZE = 176000;
+	private volatile byte[] buffer; //Используется для хранения битовых отсчетов, по два бита на один отсчет
+	private volatile short[] sampleBuffer; //Используется для хранения отсчетов 1 шорт на один отсчет
 	private SourceDataLine audioLine;
 	private boolean isPaused = false;
 	public boolean echoActive = false;
-	private boolean spectrBeforeUpdated = false;
-	private boolean spectrAfterUpdated = false;
+	private volatile boolean spectrBeforeUpdated = false;
+	private volatile boolean spectrAfterUpdated = false;
 	private double[] fftOffsetsBefore;
 	private double[] fftOffsetsAfter;
 	private LineListener listener;
