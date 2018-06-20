@@ -11,11 +11,11 @@ import org.jfree.chart.plot.Plot;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
-public class Spectrogram {
+public class SpectrogramBefore {
 	View GUIclone;
 	AudioPlayer aPlayerClone;
 	SpectrogramThread spT;
-	public Spectrogram(View GUI, AudioPlayer aPlayer) {
+	public SpectrogramBefore(View GUI, AudioPlayer aPlayer) {
 		this.GUIclone = GUI;
 		this.aPlayerClone = aPlayer;
 	}
@@ -24,9 +24,7 @@ public class Spectrogram {
 			short[] samplesBuffer;
 			FFT fft = new FFT();
 			XYSeries spectrPlotInput = new XYSeries("Input");
-			XYSeries spectrPlotOutput = new XYSeries("Output");
 			GUIclone.getSpectrBefore().getChart().getXYPlot().setDataset(new XYSeriesCollection(spectrPlotInput));
-			GUIclone.getSpectrAfter().getChart().getXYPlot().setDataset(new XYSeriesCollection(spectrPlotOutput));
 			int counter = 0;
 			double[] amplitudes;
 			if (aPlayerClone.getThread() == null) {
@@ -44,17 +42,6 @@ public class Spectrogram {
 						spectrPlotInput.add(counter, 20*Math.log10(Math.abs(Math.ceil(amplitudes[counter]))));
 					}
 					GUIclone.spectrogramBefore.updateUI();
-					System.gc();
-				}
-				if (aPlayerClone.spectrAfterIsUpdated()) {
-					samplesBuffer = aPlayerClone.getSampledBuffer();
-					fft.setOffsets(samplesBuffer);
-					amplitudes = fft.getSpectrumAmpl();
-					spectrPlotOutput.clear();
-					for (counter = 0; counter < 22000; counter += 100) {
-						spectrPlotOutput.add(counter, 20*Math.log10(Math.abs(Math.ceil(amplitudes[counter]))));
-					}
-					GUIclone.spectrogramAfter.updateUI();
 					System.gc();
 				}
 			}

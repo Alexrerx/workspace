@@ -26,6 +26,7 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
+
 public class Controller implements ActionListener, ChangeListener, ItemListener {
 	private View GUI;
 	private boolean isPlaying = false;
@@ -56,8 +57,10 @@ public class Controller implements ActionListener, ChangeListener, ItemListener 
 				aPlayer.play();
 				isPlaying = true;
 				GUI.getPlayButton().setText("Pause");
-				Spectrogram spec = new Spectrogram(GUI, aPlayer);
-				spec.RunForest();
+				SpectrogramBefore specBef = new SpectrogramBefore(GUI, aPlayer);
+				SpectrogramAfter specAft = new SpectrogramAfter(GUI, aPlayer);
+				specBef.RunForest();
+				specAft.RunForest();
 			}
 			else {
 				//Добавить паузу аудиозаписи

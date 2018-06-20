@@ -75,7 +75,7 @@ public class View extends JFrame {
         					.addComponent(filter1Slider)
         					.addComponent(filter2Slider)
         					.addComponent(filter3Slider))
-        			.addComponent(spectrogramAfter))
+        			.addComponent(spectrogramBefore))
         	.addGroup(layout.createParallelGroup(CENTER)
         			.addComponent(stopButton)
         			.addComponent(overdriveCheckBox)
@@ -83,7 +83,7 @@ public class View extends JFrame {
         				.addComponent(filter4Slider)
         				.addComponent(filter5Slider)
         				.addComponent(filter6Slider))
-        			.addComponent(spectrogramBefore))
+        			.addComponent(spectrogramAfter))
         );
         layout.setVerticalGroup(layout.createSequentialGroup()
         	.addComponent(openFileButton)
@@ -101,8 +101,8 @@ public class View extends JFrame {
         			.addComponent(filter5Slider)
         			.addComponent(filter6Slider))
         	.addGroup(layout.createParallelGroup(BASELINE)
-        			.addComponent(spectrogramAfter)
-        			.addComponent(spectrogramBefore))
+        			.addComponent(spectrogramBefore)
+        			.addComponent(spectrogramAfter))
         );
 		frame.pack();
 		frame.setVisible(true);
