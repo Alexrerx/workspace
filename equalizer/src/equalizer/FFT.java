@@ -83,10 +83,6 @@ public class FFT {
 			ImOffset = pS0im + (pWre * pS1im + pWim * pS1re);
 			spectrAmplitude[counter] =
 					Math.sqrt(Math.pow(ReOffset, 2) + Math.pow(ImOffset, 2));
-			//ReOffset = pS0re - (pWre * pS1re - pWim * pS1im);
-			//ImOffset = pS0im - (pWre * pS1im + pWim * pS1re);
-			//spectrAmplitude[counter + (offsets.length / 2)] = 
-				//	Math.pow((Math.pow(ReOffset, 2) + Math.pow(ImOffset, 2)), 0.5);
 		}
 		return;
 	}
