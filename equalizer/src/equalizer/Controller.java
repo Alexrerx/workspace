@@ -74,7 +74,7 @@ public class Controller implements ActionListener, ChangeListener, ItemListener 
 			int ret = fileOpen.showDialog(null, "Open File");
 			if (ret == fileOpen.APPROVE_OPTION) {
 				File file = fileOpen.getSelectedFile();
-				aPlayer = new AudioPlayer(file);
+				aPlayer = new AudioPlayer(file, GUI);
 				//Добавить дальнейшие действия с файлом
 			}
 		}

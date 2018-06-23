@@ -19,12 +19,7 @@ public class FFT {
 		spectrAmplitude = new double[MAX_SPECTRUM_FREQUENCY];
 	}
 	public void setOffsets(short[] inOffsets) {
-		this.offsets = new short[inOffsets.length / 2];
-		int counter2 = 0;
-		for (int counter1 = 0; counter1 < inOffsets.length; counter1 += 2) {
-			this.offsets[counter2] = inOffsets[counter1];
-			++counter2;
-		}
+		this.offsets = inOffsets;
 	}
 	
 	private double Wre(int k, int N) {

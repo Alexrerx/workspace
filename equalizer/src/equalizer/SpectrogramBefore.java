@@ -33,8 +33,8 @@ public class SpectrogramBefore {
 				}
 			}
 			while(aPlayerClone.getThread().isAlive()) {
-				if (aPlayerClone.spectrBeforeIsUpdated()) {
-					samplesBuffer = aPlayerClone.getSampledBuffer();
+				if (!aPlayerClone.spectrAfterIsUpdated() && aPlayerClone.spectrBeforeIsUpdated()) {
+					samplesBuffer = aPlayerClone.getLeftSampledBuffer();
 					fft.setOffsets(samplesBuffer);
 					amplitudes = fft.getSpectrumAmpl();
 					spectrPlotInput.clear();
