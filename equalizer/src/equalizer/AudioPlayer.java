@@ -6,7 +6,7 @@ import java.math.*;
 import java.nio.ByteBuffer;
 
 public class AudioPlayer {
-	private final int MAX_BUFF_SIZE = 176016;
+	private final int MAX_BUFF_SIZE = 176352;
 	private volatile byte[] buffer; //Используется для хранения битовых отсчетов, по два бита на один отсчет
 	private volatile short[] leftSampleBuffer;
 	private volatile short[] rightSampleBuffer;
@@ -83,12 +83,12 @@ public class AudioPlayer {
 				int number;
 				Echo echoEffectLeft = new Echo();
 				Echo echoEffectRight = new Echo();
-				Filter filter0 = new Filter(FilterInfo.COEFS_OF_BAND_0);
-				Filter filter1 = new Filter(FilterInfo.COEFS_OF_BAND_1);
-				Filter filter2 = new Filter(FilterInfo.COEFS_OF_BAND_2);
-				Filter filter3 = new Filter(FilterInfo.COEFS_OF_BAND_3);
-				Filter filter4 = new Filter(FilterInfo.COEFS_OF_BAND_4);
-				Filter filter5 = new Filter(FilterInfo.COEFS_OF_BAND_5);
+				Filter filter0 = new Filter(FilterInfo.COEFFS_OF_BAND_0);
+				Filter filter1 = new Filter(FilterInfo.COEFFS_OF_BAND_1);
+				Filter filter2 = new Filter(FilterInfo.COEFFS_OF_BAND_2);
+				Filter filter3 = new Filter(FilterInfo.COEFFS_OF_BAND_3);
+				Filter filter4 = new Filter(FilterInfo.COEFFS_OF_BAND_4);
+				Filter filter5 = new Filter(FilterInfo.COEFFS_OF_BAND_5);
 				audioLine.start();
 				while (((number = ais.read(buffer)) != -1)&&(!this.isInterrupted())) {
 					byteToShortArray();
