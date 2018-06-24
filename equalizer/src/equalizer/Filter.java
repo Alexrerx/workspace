@@ -31,7 +31,11 @@ public class Filter {
 							(double)inOffsets[counterOffset + group * groupSize]
 							* filterCoeffs[counterOffset  - counterConvolution]));
 				}
+				if ((int)Math.ceil(temp) > Short.MIN_VALUE && (int)Math.ceil(temp) < Short.MAX_VALUE)
 				outOffsets[counterOffset + group * groupSize] = (short)Math.ceil(temp);
+				else if ((int)Math.ceil(temp) < Short.MIN_VALUE)
+					outOffsets[counterOffset + group * groupSize] = Short.MIN_VALUE;
+				else outOffsets[counterOffset + group * groupSize] = Short.MAX_VALUE;
 				temp = 0;
 			}
 		}
@@ -48,8 +52,16 @@ public class Filter {
 							(double)inOffsets[counterOffset + group * groupSize]
 							* filterCoeffs[counterOffset - counterConvolution]));
 				}
-				outOffsets[counterOffset + group * groupSize] = (short)((int)Math.ceil(temp)
-						+ inOffsets[counterOffset + group * groupSize]);
+				if (((int)Math.ceil(temp)
+						+ inOffsets[counterOffset + group * groupSize]) > Short.MIN_VALUE
+						&& ((int)Math.ceil(temp)
+						+ inOffsets[counterOffset + group * groupSize]) < Short.MAX_VALUE)
+					outOffsets[counterOffset + group * groupSize] = (short)((int)Math.ceil(temp)
+							+ inOffsets[counterOffset + group * groupSize]);
+				else if (((int)Math.ceil(temp)
+						+ inOffsets[counterOffset + group * groupSize]) < Short.MIN_VALUE)
+					outOffsets[counterOffset + group * groupSize] = Short.MIN_VALUE;
+				else outOffsets[counterOffset + group * groupSize] = Short.MAX_VALUE;
 				temp = 0;
 			}
 		}
