@@ -6,10 +6,13 @@ import java.math.*;
 import java.nio.ByteBuffer;
 
 public class AudioPlayer {
-	private final int MAX_BUFF_SIZE = 176352;
+	private final int MAX_BUFF_SIZE = 160320;
 	private volatile byte[] buffer; //Используется для хранения битовых отсчетов, по два бита на один отсчет
 	private volatile short[] leftSampleBuffer;
 	private volatile short[] rightSampleBuffer;
+	private volatile short[] leftSampleBufferCopy;
+	private volatile short[] rightSampleBufferCopy;
+	private volatile double gain;
 	private SourceDataLine audioLine;
 	private boolean isPaused = false;
 	public boolean echoActive = false;
@@ -28,6 +31,8 @@ public class AudioPlayer {
 		buffer = new byte[MAX_BUFF_SIZE];
 		rightSampleBuffer = new short[MAX_BUFF_SIZE / 4];
 		leftSampleBuffer = new short[MAX_BUFF_SIZE / 4];
+		rightSampleBufferCopy = new short[MAX_BUFF_SIZE / 4];
+		leftSampleBufferCopy = new short[MAX_BUFF_SIZE / 4];
 		try {
 			ais = AudioSystem.getAudioInputStream(file);
 			AudioFormat format = ais.getFormat();			
@@ -89,13 +94,15 @@ public class AudioPlayer {
 				Filter filter3 = new Filter(FilterInfo.COEFFS_OF_BAND_3);
 				Filter filter4 = new Filter(FilterInfo.COEFFS_OF_BAND_4);
 				Filter filter5 = new Filter(FilterInfo.COEFFS_OF_BAND_5);
+				short[] leftSampleBufferT = new short[leftSampleBuffer.length];
+				short[] rightSampleBufferT = new short[rightSampleBuffer.length];
 				audioLine.start();
 				while (((number = ais.read(buffer)) != -1)&&(!this.isInterrupted())) {
 					byteToShortArray();
 					spectrAfterUpdated = false;
 					spectrBeforeUpdated = true;
 					try {
-						this.sleep(150);
+						this.sleep(0);
 					} catch (InterruptedException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -109,42 +116,64 @@ public class AudioPlayer {
 						echoEffectLeft.endEffect(!echoActive);
 						echoEffectRight.endEffect(!echoActive);
 					}
-					filter0.setGain((int)Math.pow(10, 0));//GUIclone.getFilter1Slider().getValue()));
+					
+					gain = Math.pow(10, (GUIclone.getFilter1Slider().getValue() / 20));
+					filter0.setGain(gain);
 					filter0.setInOffsets(leftSampleBuffer);
-					leftSampleBuffer = filter0.getFilteredDataFilter0();
+					leftSampleBufferCopy = filter0.getFilteredData();
 					filter0.setInOffsets(rightSampleBuffer);
-					rightSampleBuffer = filter0.getFilteredDataFilter0();
-					filter1.setGain((int)Math.pow(10, 0));//GUIclone.getFilter2Slider().getValue()));
+					rightSampleBufferCopy = filter0.getFilteredData();
+					
+					gain = Math.pow(10, (GUIclone.getFilter2Slider().getValue() / 20));
+					filter1.setGain(gain);//GUIclone.getFilter2Slider().getValue()));
 					filter1.setInOffsets(leftSampleBuffer);
-					leftSampleBuffer = filter1.getFilteredData();
+					leftSampleBufferT = filter1.getFilteredData();
 					filter1.setInOffsets(rightSampleBuffer);
-					rightSampleBuffer = filter1.getFilteredData();
-					filter2.setGain((int)Math.pow(10, 0));//GUIclone.getFilter3Slider().getValue()));
+					rightSampleBufferT = filter1.getFilteredData();
+					sumOffsets(leftSampleBufferT, rightSampleBufferT);
+					
+					gain = Math.pow(10, (GUIclone.getFilter3Slider().getValue() / 20));
+					filter2.setGain(gain);//GUIclone.getFilter3Slider().getValue()));
 					filter2.setInOffsets(leftSampleBuffer);
-					leftSampleBuffer = filter2.getFilteredData();
+					leftSampleBufferT = filter2.getFilteredData();
 					filter2.setInOffsets(rightSampleBuffer);
-					rightSampleBuffer = filter2.getFilteredData();
-					filter3.setGain((int)Math.pow(10, 0));//GUIclone.getFilter4Slider().getValue()));
+					rightSampleBufferT = filter2.getFilteredData();
+					sumOffsets(leftSampleBufferT, rightSampleBufferT);
+					
+					gain = Math.pow(10, (GUIclone.getFilter4Slider().getValue() / 20));
+					filter3.setGain(gain);//GUIclone.getFilter4Slider().getValue()));
 					filter3.setInOffsets(leftSampleBuffer);
-					leftSampleBuffer = filter3.getFilteredData();
+					leftSampleBufferT = filter3.getFilteredData();
 					filter3.setInOffsets(rightSampleBuffer);
-					rightSampleBuffer = filter3.getFilteredData();
-					filter4.setGain((int)Math.pow(10, 0));//GUIclone.getFilter5Slider().getValue()));
+					rightSampleBufferT = filter3.getFilteredData();
+					sumOffsets(leftSampleBufferT, rightSampleBufferT);
+					
+					gain = Math.pow(10, (GUIclone.getFilter5Slider().getValue() / 20));
+					filter4.setGain(gain);//GUIclone.getFilter5Slider().getValue()));
 					filter4.setInOffsets(leftSampleBuffer);
-					leftSampleBuffer = filter4.getFilteredData();
+					leftSampleBufferT = filter4.getFilteredData();
 					filter4.setInOffsets(rightSampleBuffer);
-					rightSampleBuffer = filter4.getFilteredData();
-					filter5.setGain((int)Math.pow(10, 0));//GUIclone.getFilter6Slider().getValue()));
+					rightSampleBufferT = filter4.getFilteredData();
+					sumOffsets(leftSampleBufferT, rightSampleBufferT);
+					
+					gain = Math.pow(10, (GUIclone.getFilter6Slider().getValue() / 20));
+					filter5.setGain(gain);//GUIclone.getFilter6Slider().getValue()));
 					filter5.setInOffsets(leftSampleBuffer);
-					leftSampleBuffer = filter5.getFilteredData();
+					leftSampleBufferT = filter5.getFilteredData();
 					filter5.setInOffsets(rightSampleBuffer);
-					rightSampleBuffer = filter5.getFilteredData();
+					rightSampleBufferT = filter5.getFilteredData();
+					sumOffsets(leftSampleBufferT, rightSampleBufferT);
+					leftSampleBuffer = leftSampleBufferCopy;
+					rightSampleBuffer = rightSampleBufferCopy;
+					rightSampleBufferCopy = new short[MAX_BUFF_SIZE / 4];
+					leftSampleBufferCopy = new short[MAX_BUFF_SIZE / 4];
+					
 					shortToByteArray();
 					audioLine.write(buffer, 0, number);
 					spectrAfterUpdated = true;
 					spectrBeforeUpdated = false;
 					try {
-						this.sleep(150);
+						this.sleep(0);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -191,7 +220,31 @@ public class AudioPlayer {
 		}
 		return;
 	}
-	
+	public void sumOffsets(short[] offsetsToSumLeft, short[] offsetsToSumRight) {
+		int typeCheck;
+		for (int counter = 0; counter < offsetsToSumRight.length; ++counter) {
+			typeCheck = offsetsToSumLeft[counter] + this.leftSampleBufferCopy[counter];
+			if (typeCheck > Short.MIN_VALUE && typeCheck < Short.MAX_VALUE) {
+				this.leftSampleBufferCopy[counter] = (short)typeCheck;
+			}
+			else if (typeCheck < Short.MIN_VALUE) {
+				this.leftSampleBufferCopy[counter] = Short.MIN_VALUE;
+			}
+			else {
+				this.leftSampleBufferCopy[counter] = Short.MAX_VALUE;
+			}
+			typeCheck = offsetsToSumRight[counter] + this.rightSampleBufferCopy[counter];
+			if (typeCheck > Short.MIN_VALUE && typeCheck < Short.MAX_VALUE) {
+				this.rightSampleBufferCopy[counter] = (short)typeCheck;
+			}
+			else if (typeCheck < Short.MIN_VALUE) {
+				this.rightSampleBufferCopy[counter] = Short.MIN_VALUE;
+			}
+			else {
+				this.rightSampleBufferCopy[counter] = Short.MAX_VALUE;
+			}
+		}
+	}
 	public int getSamplingFreq() {
 		return MAX_BUFF_SIZE;
 	}

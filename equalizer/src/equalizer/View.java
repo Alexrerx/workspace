@@ -163,6 +163,12 @@ public class View extends JFrame {
 		filter6Slider.setLabelTable(labelTable);
 		filter5Slider.setPaintLabels(true);
 		filter6Slider.setPaintLabels(true);
+		filter1Slider.setValue(0);
+		filter2Slider.setValue(0);
+		filter3Slider.setValue(0);
+		filter4Slider.setValue(0);
+		filter5Slider.setValue(0);
+		filter6Slider.setValue(0);
 		echoCheckBox = new JCheckBox("Echo");
 		overdriveCheckBox = new JCheckBox("Overdrive");
 		
@@ -196,19 +202,19 @@ public class View extends JFrame {
 	}
 	
 	public JSlider getFilter3Slider() {
-		return filter1Slider;
+		return filter3Slider;
 	}
 	
 	public JSlider getFilter4Slider() {
-		return filter2Slider;
+		return filter4Slider;
 	}
 	
 	public JSlider getFilter5Slider() {
-		return filter1Slider;
+		return filter5Slider;
 	}
 	
 	public JSlider getFilter6Slider() {
-		return filter2Slider;
+		return filter6Slider;
 	}
 	
 	public JCheckBox getEchoCheckBox() {

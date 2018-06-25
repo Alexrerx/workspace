@@ -100,6 +100,18 @@ public class Controller implements ActionListener, ChangeListener, ItemListener 
 		if (((JSlider)e.getSource()) == GUI.getFilter2Slider()) {
 			//Добавить изменение состояния фильтра 2
 		}
+		if (((JSlider)e.getSource()) == GUI.getFilter3Slider()) {
+			//Добавить изменение состояния фильтра 3
+		}
+		if (((JSlider)e.getSource()) == GUI.getFilter4Slider()) {
+			//Добавить изменение состояния фильтра 4
+		}
+		if (((JSlider)e.getSource()) == GUI.getFilter5Slider()) {
+			//Добавить изменение состояния фильтра 5
+		}
+		if (((JSlider)e.getSource()) == GUI.getFilter6Slider()) {
+			//Добавить изменение состояния фильтра 6
+		}
 	}
 	
 	@Override
