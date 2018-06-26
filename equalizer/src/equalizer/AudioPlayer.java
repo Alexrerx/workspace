@@ -12,12 +12,11 @@ public class AudioPlayer {
 	private volatile short[] rightSampleBuffer;
 	private volatile short[][] leftSampleBufferAfterFilter;
 	private volatile short[][] rightSampleBufferAfterFilter;
-	private volatile double gain;
 	private SourceDataLine audioLine;
 	private boolean isPaused = false;
 	public boolean echoActive = false;
 	public boolean overdriveActive = false;
-	private View GUIclone;
+	public double[] gain = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
 	private volatile boolean spectrBeforeUpdated = false;
 	private volatile boolean spectrAfterUpdated = false;
 	private double[] fftOffsetsBefore;
@@ -27,7 +26,6 @@ public class AudioPlayer {
 	private File apFile;
 	private AudioThread at;
 	public AudioPlayer(File file, View GUI) {
-		GUIclone = GUI;
 		apFile = file;
 		buffer = new byte[MAX_BUFF_SIZE];
 		rightSampleBuffer = new short[MAX_BUFF_SIZE / 4];
@@ -112,43 +110,37 @@ public class AudioPlayer {
 						leftSampleBuffer = overdriveEffect.createEffect(leftSampleBuffer);
 						rightSampleBuffer = overdriveEffect.createEffect(rightSampleBuffer);
 					}
-					gain = Math.pow(10, (GUIclone.getFilter1Slider().getValue() / 20));
-					filter0.setGain(gain);
+					filter0.setGain(gain[0]);
 					filter0.setInOffsets(leftSampleBuffer);
 					leftSampleBufferAfterFilter[0] = filter0.getFilteredData();
 					filter0.setInOffsets(rightSampleBuffer);
 					rightSampleBufferAfterFilter[0] = filter0.getFilteredData();
 					
-					gain = Math.pow(10, (GUIclone.getFilter2Slider().getValue() / 20));
-					filter1.setGain(gain);//GUIclone.getFilter2Slider().getValue()));
+					filter1.setGain(gain[1]);//GUIclone.getFilter2Slider().getValue()));
 					filter1.setInOffsets(leftSampleBuffer);
 					leftSampleBufferAfterFilter[1] = filter1.getFilteredData();
 					filter1.setInOffsets(rightSampleBuffer);
 					rightSampleBufferAfterFilter[1] = filter1.getFilteredData();
 					
-					gain = Math.pow(10, (GUIclone.getFilter3Slider().getValue() / 20));
-					filter2.setGain(gain);//GUIclone.getFilter3Slider().getValue()));
+					filter2.setGain(gain[2]);//GUIclone.getFilter3Slider().getValue()));
 					filter2.setInOffsets(leftSampleBuffer);
 					leftSampleBufferAfterFilter[2] = filter2.getFilteredData();
 					filter2.setInOffsets(rightSampleBuffer);
 					rightSampleBufferAfterFilter[2] = filter2.getFilteredData();
-					
-					gain = Math.pow(10, (GUIclone.getFilter4Slider().getValue() / 20));
-					filter3.setGain(gain);//GUIclone.getFilter4Slider().getValue()));
+
+					filter3.setGain(gain[3]);//GUIclone.getFilter4Slider().getValue()));
 					filter3.setInOffsets(leftSampleBuffer);
 					leftSampleBufferAfterFilter[3] = filter3.getFilteredData();
 					filter3.setInOffsets(rightSampleBuffer);
 					rightSampleBufferAfterFilter[3] = filter3.getFilteredData();
 					
-					gain = Math.pow(10, (GUIclone.getFilter5Slider().getValue() / 20));
-					filter4.setGain(gain);//GUIclone.getFilter5Slider().getValue()));
+					filter4.setGain(gain[4]);//GUIclone.getFilter5Slider().getValue()));
 					filter4.setInOffsets(leftSampleBuffer);
 					leftSampleBufferAfterFilter[4] = filter4.getFilteredData();
 					filter4.setInOffsets(rightSampleBuffer);
 					rightSampleBufferAfterFilter[4] = filter4.getFilteredData();
 
-					gain = Math.pow(10, (GUIclone.getFilter6Slider().getValue() / 20));
-					filter5.setGain(gain);//GUIclone.getFilter6Slider().getValue()));
+					filter5.setGain(gain[5]);//GUIclone.getFilter6Slider().getValue()));
 					filter5.setInOffsets(leftSampleBuffer);
 					leftSampleBufferAfterFilter[5] = filter5.getFilteredData();
 					filter5.setInOffsets(rightSampleBuffer);

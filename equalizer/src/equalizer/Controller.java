@@ -48,6 +48,10 @@ public class Controller implements ActionListener, ChangeListener, ItemListener 
 		GUI.getOverdriveCheckBox().addItemListener(this);
 		GUI.getFilter1Slider().addChangeListener(this);
 		GUI.getFilter2Slider().addChangeListener(this);
+		GUI.getFilter3Slider().addChangeListener(this);
+		GUI.getFilter4Slider().addChangeListener(this);
+		GUI.getFilter5Slider().addChangeListener(this);
+		GUI.getFilter6Slider().addChangeListener(this);
 	}
 	
 	@Override
@@ -95,22 +99,22 @@ public class Controller implements ActionListener, ChangeListener, ItemListener 
 	@Override
 	public void stateChanged(ChangeEvent e) {
 		if (((JSlider)e.getSource()) == GUI.getFilter1Slider()) {
-			//Добавить изменение состояния фильтра 1
+			aPlayer.gain[0] = Math.pow(10, (GUI.getFilter1Slider().getValue() / 20));
 		}
 		if (((JSlider)e.getSource()) == GUI.getFilter2Slider()) {
-			//Добавить изменение состояния фильтра 2
+			aPlayer.gain[1] = Math.pow(10, (GUI.getFilter2Slider().getValue() / 20));
 		}
 		if (((JSlider)e.getSource()) == GUI.getFilter3Slider()) {
-			//Добавить изменение состояния фильтра 3
+			aPlayer.gain[2] = Math.pow(10, (GUI.getFilter3Slider().getValue() / 20));
 		}
 		if (((JSlider)e.getSource()) == GUI.getFilter4Slider()) {
-			//Добавить изменение состояния фильтра 4
+			aPlayer.gain[3] = Math.pow(10, (GUI.getFilter4Slider().getValue() / 20));
 		}
 		if (((JSlider)e.getSource()) == GUI.getFilter5Slider()) {
-			//Добавить изменение состояния фильтра 5
+			aPlayer.gain[4] = Math.pow(10, (GUI.getFilter5Slider().getValue() / 20));
 		}
 		if (((JSlider)e.getSource()) == GUI.getFilter6Slider()) {
-			//Добавить изменение состояния фильтра 6
+			aPlayer.gain[5] = Math.pow(10, (GUI.getFilter6Slider().getValue() / 20));
 		}
 	}
 	
