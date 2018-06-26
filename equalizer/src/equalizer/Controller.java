@@ -128,56 +128,13 @@ public class Controller implements ActionListener, ChangeListener, ItemListener 
 		}
 		if (((JCheckBox)e.getSource()) == GUI.getOverdriveCheckBox()) {
 			if (e.getStateChange() == ItemEvent.SELECTED) {
-				//Добавить включение эффекта Овердрайв
+				aPlayer.overdriveActive = true;
 			}
 			else {
-				//Добавить выключение эффекта Овердрайв
+				aPlayer.overdriveActive = false;
 			}	
 		}
 	}
 }
-	/*class Spectrogram extends SwingWorker<JFreeChart, Integer> {
-		@Override
-		protected JFreeChart doInBackground() throws Exception {
-			short[] samplesBuffer;
-			FFT fft = new FFT();
-			XYSeries spectrPlot;
-			XYDataset spectrPlotData;
-			JFreeChart spectr = null;
-			double[] amplitudes;
-			while (aPlayer.getThread() == null) {
-			}
-			while (aPlayer.getThread().isAlive()) {
-				if (aPlayer.spectrBeforeIsUpdated()) {
-					aPlayer.getThread().sleep(50);
-					samplesBuffer = aPlayer.getSampledBuffer();
-					fft.setOffsets(samplesBuffer);
-					amplitudes = fft.getSpectrumAmpl();
-					spectrPlot = new XYSeries("Input");
-					for (int counter = 0; counter < 0; counter += 500) {
-						spectrPlot.add(counter / 1000, 20*Math.log10(amplitudes[counter]));
-					}
-					spectrPlotData = new XYSeriesCollection(spectrPlot);
-					spectr = ChartFactory.createXYLineChart("Input",
-							"Freq, kHz", "Amplitude, dB", spectrPlotData, PlotOrientation.VERTICAL,
-							true, false, false);
-					return spectr;
-				}
-			}
-			return spectr;
-		}
-		@Override
-		protected void done() {
-			try {
-				GUI.spectrogramBefore =  new ChartPanel(get());
-				GUI.spectrogramBefore.setPreferredSize(new Dimension(700, 700));
-				GUI.revalidate();
-			} catch (InterruptedException | ExecutionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return;
-		}
-	}*/
 
 

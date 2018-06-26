@@ -16,6 +16,7 @@ public class AudioPlayer {
 	private SourceDataLine audioLine;
 	private boolean isPaused = false;
 	public boolean echoActive = false;
+	public boolean overdriveActive = false;
 	private View GUIclone;
 	private volatile boolean spectrBeforeUpdated = false;
 	private volatile boolean spectrAfterUpdated = false;
@@ -86,8 +87,8 @@ public class AudioPlayer {
 					e.printStackTrace();
 				}
 				int number;
-				Echo echoEffectLeft = new Echo();
-				Echo echoEffectRight = new Echo();
+				Echo echoEffect = new Echo(MAX_BUFF_SIZE / 4);
+				Overdrive overdriveEffect = new Overdrive(MAX_BUFF_SIZE / 4);
 				Filter filter0 = new Filter(FilterInfo.COEFFS_OF_BAND_0);
 				Filter filter1 = new Filter(FilterInfo.COEFFS_OF_BAND_1);
 				Filter filter2 = new Filter(FilterInfo.COEFFS_OF_BAND_2);
@@ -101,14 +102,16 @@ public class AudioPlayer {
 					spectrBeforeUpdated = true;
 					spectrAfterUpdated = true;
 					if (echoActive) {
-						leftSampleBuffer = echoEffectLeft.createEffect(leftSampleBuffer);
-						rightSampleBuffer = echoEffectRight.createEffect(rightSampleBuffer);				
+						leftSampleBuffer = echoEffect.createEffect(leftSampleBuffer);
+						rightSampleBuffer = echoEffect.createEffect(rightSampleBuffer);				
 					}
 					else {
-						echoEffectLeft.endEffect(!echoActive);
-						echoEffectRight.endEffect(!echoActive);
+						echoEffect.endEffect(!echoActive);
 					}
-					
+					if (overdriveActive) {
+						leftSampleBuffer = overdriveEffect.createEffect(leftSampleBuffer);
+						rightSampleBuffer = overdriveEffect.createEffect(rightSampleBuffer);
+					}
 					gain = Math.pow(10, (GUIclone.getFilter1Slider().getValue() / 20));
 					filter0.setGain(gain);
 					filter0.setInOffsets(leftSampleBuffer);

@@ -8,14 +8,15 @@ import java.util.Queue;
 public class Echo {
 	private final int delay = 1000;
 	private Queue<Short> delayQueue;
-	public Echo() {
+	private short[] outputAudioStream;
+	public Echo(int bufferSize) {
 		delayQueue = new LinkedList<Short>();
+		outputAudioStream = new short[bufferSize];
 	}
 
 	public synchronized short[] createEffect(short[] inputAudioStream) {
 		int typeCheck;
 		short delaySig;
-		short[] outputAudioStream = new short[inputAudioStream.length];
 		for (int sigCount = 0; sigCount < inputAudioStream.length; ++sigCount) {
 			if (((delayQueue.size() + 1) <= delay)) {
 				delayQueue.add(inputAudioStream[sigCount]);
