@@ -30,6 +30,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 public class Controller implements ActionListener, ChangeListener, ItemListener {
 	private View GUI;
 	private boolean isPlaying = false;
+	private boolean isLaunched = false;
 	JFileChooser fileOpen;
 	File file;
 	AudioPlayer aPlayer;
@@ -57,21 +58,29 @@ public class Controller implements ActionListener, ChangeListener, ItemListener 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (((JButton)e.getSource()) == GUI.getPlayButton()) {
-			if (!isPlaying) {
+			if (!isLaunched) {
 				aPlayer.play();
+				aPlayer.isPaused = false;
 				isPlaying = true;
+				isLaunched = true;
 				GUI.getPlayButton().setText("Pause");
 				SpectrogramBefore specBef = new SpectrogramBefore(GUI, aPlayer);
 				SpectrogramAfter specAft = new SpectrogramAfter(GUI, aPlayer);
 				specBef.RunForest();
 				specAft.RunForest();
 			}
-			else {
+			else if(isLaunched && isPlaying){
 				//Добавить паузу аудиозаписи
-				aPlayer.pause();
+				aPlayer.isPaused = true;
 				isPlaying = false;
 				GUI.getPlayButton().setText("Play");
 			}
+			else {
+				aPlayer.isPaused = false;
+				isPlaying = true;
+				GUI.getPlayButton().setText("Paused");
+			}
+				
 		}
 		if (((JButton)e.getSource()) == GUI.getOpenFileButton()) {
 			fileOpen = new JFileChooser();
@@ -85,12 +94,10 @@ public class Controller implements ActionListener, ChangeListener, ItemListener 
 		if (((JButton)e.getSource()) == GUI.getStopButton()) {
 			if (GUI.getStopButton().getText() == "Stop") {
 				//Добавить остановку песни 
-				aPlayer.stop();
 				GUI.getStopButton().setText("Restart");
 			}
 			else {
 				//Добавить перезапуск файла
-				aPlayer.restart();
 				GUI.getStopButton().setText("Stop");
 			}
 		}

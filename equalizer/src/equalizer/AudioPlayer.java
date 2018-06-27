@@ -6,14 +6,14 @@ import java.math.*;
 import java.nio.ByteBuffer;
 
 public class AudioPlayer {
-	private final int MAX_BUFF_SIZE = 40080;
+	private final int MAX_BUFF_SIZE = 50100;
 	private volatile byte[] buffer; //Используется для хранения битовых отсчетов, по два бита на один отсчет
 	private volatile short[] leftSampleBuffer;
 	private volatile short[] rightSampleBuffer;
 	private volatile short[][] leftSampleBufferAfterFilter;
 	private volatile short[][] rightSampleBufferAfterFilter;
 	private SourceDataLine audioLine;
-	private boolean isPaused = false;
+	public boolean isPaused = false;
 	public boolean echoActive = false;
 	public boolean overdriveActive = false;
 	public double[] gain = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
@@ -49,15 +49,6 @@ public class AudioPlayer {
 		if (!at.runs) {
 			at.start();
 		}
-		else at.playA();
-	}
-	
-	public void pause() {
-		at.pauseA();
-	}
-	
-	public void stop() {
-		at.stopA();
 	}
 	
 	public void restart() {
@@ -98,6 +89,20 @@ public class AudioPlayer {
 					byteToShortArray();
 					spectrAfterUpdated = false;
 					spectrBeforeUpdated = true;
+					if (isPaused) {
+						for(;;) {
+							try {
+								this.sleep(100);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							
+							if (!isPaused ) {
+								break;
+							}
+						}
+					}
 					spectrAfterUpdated = true;
 					if (echoActive) {
 						leftSampleBuffer = echoEffect.createEffect(leftSampleBuffer);
@@ -155,17 +160,6 @@ public class AudioPlayer {
 			} catch (IOException e) {
 					e.printStackTrace();
 			}
-		}
-		public void pauseA() {
-			audioLine.stop();
-			return;
-		}
-		public void playA() {
-			audioLine.start();
-		}
-		public void stopA() {
-			audioLine.stop();
-			audioLine.flush();
 		}
 	}
 	public void byteToShortArray() {
