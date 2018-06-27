@@ -11,6 +11,14 @@ package equalizer;
  S - спектр
  */
 public class FFT {
+	double S0im = 0;
+	double S0re = 0;
+	double Wre = 0;
+	double Wim = 0;
+	double S1re = 0;
+	double S1im = 0;
+	double ReOffset = 0.0;
+	double ImOffset = 0.0;
 	public short[] offsets;
 	double[] spectrAmplitude;
 	final private int step = 100;
@@ -23,59 +31,51 @@ public class FFT {
 	}
 	
 	private double Wre(int k, int N) {
-		double Wre = Math.cos((-2 * Math.PI * k) / N);
+		Wre = Math.cos((-2 * Math.PI * k) / N);
 		return Wre;
 	}
 	private double Wim(int k, int N) {
-		double Wim = Math.sin((-2 * Math.PI * k) / N);
+		Wim = Math.sin((-2 * Math.PI * k) / N);
 		return Wim;
 	}
 	private double S0re(int k) {
-		double S0re = 0;
+		S0re = 0;
 		for (int counter = 0; counter < offsets.length / 2; ++counter) {
 			S0re += offsets[counter * 2] * Wre(k * counter, offsets.length / 2);
 		}
 		return S0re;
 	}
 	private double S0im(int k) {
-		double S0im = 0;
+		S0im = 0;
 		for (int counter = 0; counter < offsets.length / 2; ++counter) {
 			S0im += offsets[counter * 2] * Wim(k * counter, offsets.length / 2);
 		}
 		return S0im;
 	}
 	private double S1re(int k) {
-		double S1re = 0;
+		S1re = 0;
 		for (int counter = 0; counter < offsets.length / 2; ++counter) {
 			S1re += offsets[counter * 2 + 1] * Wre(k * counter, offsets.length / 2);
 		}
 		return S1re;
 	}
 	private double S1im(int k) {
-		double S1im = 0;
+		S1im = 0;
 		for (int counter = 0; counter < offsets.length / 2; ++counter) {
 			S1im += offsets[counter * 2 + 1] * Wim(k * counter, offsets.length / 2);
 		}
 		return S1im;
 	}
 	private void setAllFFTOffsets() {
-		double ReOffset = 0.0;
-		double ImOffset = 0.0;
-		double pWre = 0.0;
-		double pWim = 0.0;
-		double pS1re = 0.0;
-		double pS1im = 0.0;
-		double pS0re = 0.0;
-		double pS0im = 0.0;
 		for (int counter = 0; counter < MAX_SPECTRUM_FREQUENCY; counter += step) {
-			pWre = Wre(counter, offsets.length);
-			pWim = Wim(counter, offsets.length);
-			pS1re = S1re(counter);
-			pS1im = S1im(counter);
-			pS0re = S0re(counter);
-			pS0im = S0im(counter);
-			ReOffset = pS0re + (pWre * pS1re - pWim * pS1im);
-			ImOffset = pS0im + (pWre * pS1im + pWim * pS1re);
+			Wre(counter, offsets.length);
+			Wim(counter, offsets.length);
+			S1re(counter);
+			S1im(counter);
+			S0re(counter);
+			S0im(counter);
+			ReOffset = S0re + (Wre * S1re - Wim * S1im);
+			ImOffset = S0im + (Wre * S1im + Wim * S1re);
 			spectrAmplitude[counter] =
 					Math.sqrt(Math.pow(ReOffset, 2) + Math.pow(ImOffset, 2));
 		}
