@@ -53,6 +53,10 @@ public class Controller implements ActionListener, ChangeListener, ItemListener 
 		GUI.getFilter4Slider().addChangeListener(this);
 		GUI.getFilter5Slider().addChangeListener(this);
 		GUI.getFilter6Slider().addChangeListener(this);
+		GUI.getEchoDelaySlider().addChangeListener(this);
+		GUI.getEchoWetBalanceSlider().addChangeListener(this);
+		GUI.getOverdriveMaxSlider().addChangeListener(this);
+		GUI.getOverdrivePowerSlider().addChangeListener(this);
 	}
 	
 	@Override
@@ -123,6 +127,19 @@ public class Controller implements ActionListener, ChangeListener, ItemListener 
 		if (((JSlider)e.getSource()) == GUI.getFilter6Slider()) {
 			aPlayer.gain[5] = Math.pow(10, (GUI.getFilter6Slider().getValue() / 20));
 		}
+		if (((JSlider)e.getSource()) == GUI.getEchoDelaySlider()) {
+			aPlayer.echoDelay = GUI.getEchoDelaySlider().getValue();
+		}
+		if (((JSlider)e.getSource()) == GUI.getEchoWetBalanceSlider()) {
+			aPlayer.echoWetBalance = (double)GUI.getEchoWetBalanceSlider().getValue() / 10;
+		}
+		if (((JSlider)e.getSource()) == GUI.getOverdriveMaxSlider()) {
+			aPlayer.overdriveMax = GUI.getOverdriveMaxSlider().getValue();
+		}
+		if (((JSlider)e.getSource()) == GUI.getOverdrivePowerSlider()) {
+			aPlayer.overdrivePower = GUI.getOverdrivePowerSlider().getValue();
+		}
+		
 	}
 	
 	@Override

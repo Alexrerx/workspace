@@ -1,5 +1,8 @@
 package equalizer;
 
+import java.util.ArrayList;
+import java.util.Queue;
+
 import sun.net.TelnetProtocolException;
 
 public class Filter {
@@ -7,12 +10,14 @@ public class Filter {
 	private double[] filterCoeffs;
 	private short[] inOffsets;
 	private short[] outOffsets;
-	public Filter(double[] coeffs) {
+	private ArrayList<Short> prevOffsetsForFilter;
+	public Filter(double[] coeffs, int sampleSize) {
 		filterCoeffs = coeffs;
+		outOffsets = new short[sampleSize];
+		prevOffsetsForFilter = new ArrayList<Short>();
 	}
 	public void setInOffsets(short[] offsets) {
 		inOffsets = offsets;
-		outOffsets = new short[inOffsets.length];
 	}
 	public double getGain() {
 		return gain;
@@ -26,10 +31,17 @@ public class Filter {
 		int counterOffset = 0;
 		double temp = 0;
 		for (counterOffset = 0; counterOffset < inOffsets.length; ++counterOffset) {
+			if (prevOffsetsForFilter.size() != filterCoeffs.length) {
+				prevOffsetsForFilter.add(inOffsets[counterOffset]);
+			}
+			else {
+				prevOffsetsForFilter.remove(0);
+				prevOffsetsForFilter.add(inOffsets[counterOffset]);
+			}
 			for (int counterConvolution = 0; (counterConvolution < filterCoeffs.length)
-					&& (counterOffset - counterConvolution >= 0); ++counterConvolution) {
+					&& (prevOffsetsForFilter.size() > counterConvolution); ++counterConvolution) {
 				temp += ((double)gain * (
-						(double)inOffsets[counterOffset - counterConvolution]
+						(double)prevOffsetsForFilter.get(prevOffsetsForFilter.size() - 1 - counterConvolution)
 						* filterCoeffs[counterConvolution]));
 			}
 			if ((int)Math.floor(temp) > Short.MIN_VALUE && (int)Math.floor(temp) < Short.MAX_VALUE)

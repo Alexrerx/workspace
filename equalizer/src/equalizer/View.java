@@ -37,6 +37,8 @@ public class View extends JFrame {
 	private JButton playButton, stopButton, openFileButton;
 	private JSlider filter1Slider, filter2Slider, filter3Slider;
 	private JSlider filter4Slider, filter5Slider, filter6Slider;
+	private JSlider echoDelaySlider, echoWetBalanceSlider;
+	private JSlider overdriveMaxSlider, overdrivePowerSlider;
 	private JCheckBox echoCheckBox, overdriveCheckBox;
 	public ChartPanel spectrogramBefore;
 	public ChartPanel spectrogramAfter;
@@ -57,6 +59,18 @@ public class View extends JFrame {
 	static final int FPS_MIN = -60;
 	static final int FPS_MAX = 20;
 	static final int FPS_INIT = 10;
+	static final int ECHO_DELAY_MIN = 0;
+	static final int ECHO_DELAY_MAX = 50000;
+	static final int ECHO_DELAY_INIT = 500;
+	static final int WET_BALANCE_MAX = 10;
+	static final int WET_BALANCE_MIN = 0;
+	static final int WET_BALANCE_INIT = 1;
+	static final int OVERDRIVE_MAX = 30000;
+	static final int OVERDRIVE_MIN = 0;
+	static final int OVERDRIVE_INIT = 500;
+	static final int OVERDRIVE_POWER_MAX = 10;
+	static final int OVERDRIVE_POWER_MIN = 1;
+	static final int OVERDRIVE_POWER_INIT = 1;
 	
 	public View() {
 		JFrame frame = new JFrame("Equalizer");
@@ -72,17 +86,27 @@ public class View extends JFrame {
         			.addComponent(playButton)
         			.addComponent(echoCheckBox)
         			.addGroup(layout.createSequentialGroup()
-        					.addComponent(filter1Slider)
-        					.addComponent(filter2Slider)
-        					.addComponent(filter3Slider))
+        					.addComponent(echoDelaySlider)
+        					.addComponent(echoWetBalanceSlider))
         			.addComponent(spectrogramBefore))
+        	.addGroup(layout.createParallelGroup(CENTER)
+        			.addComponent(filter1Slider))
+        	.addGroup(layout.createParallelGroup(CENTER)
+        			.addComponent(filter2Slider))
+        	.addGroup(layout.createParallelGroup(CENTER)
+        			.addComponent(filter3Slider))
+        	.addGroup(layout.createParallelGroup(CENTER)
+        			.addComponent(filter4Slider))
+        	.addGroup(layout.createParallelGroup(CENTER)
+        			.addComponent(filter5Slider))
+        	.addGroup(layout.createParallelGroup(CENTER)
+        			.addComponent(filter6Slider))
         	.addGroup(layout.createParallelGroup(CENTER)
         			.addComponent(stopButton)
         			.addComponent(overdriveCheckBox)
         			.addGroup(layout.createSequentialGroup()
-        				.addComponent(filter4Slider)
-        				.addComponent(filter5Slider)
-        				.addComponent(filter6Slider))
+        					.addComponent(overdriveMaxSlider)
+        					.addComponent(overdrivePowerSlider))
         			.addComponent(spectrogramAfter))
         );
         layout.setVerticalGroup(layout.createSequentialGroup()
@@ -99,7 +123,11 @@ public class View extends JFrame {
         			.addComponent(filter3Slider)
         			.addComponent(filter4Slider)
         			.addComponent(filter5Slider)
-        			.addComponent(filter6Slider))
+        			.addComponent(filter6Slider)
+        			.addComponent(echoDelaySlider)
+        			.addComponent(echoWetBalanceSlider)
+        			.addComponent(overdriveMaxSlider)
+        			.addComponent(overdrivePowerSlider))
         	.addGroup(layout.createParallelGroup(BASELINE)
         			.addComponent(spectrogramBefore)
         			.addComponent(spectrogramAfter))
@@ -169,9 +197,18 @@ public class View extends JFrame {
 		filter4Slider.setValue(0);
 		filter5Slider.setValue(0);
 		filter6Slider.setValue(0);
+		echoDelaySlider = new JSlider(JSlider.VERTICAL, ECHO_DELAY_MIN, ECHO_DELAY_MAX, ECHO_DELAY_INIT);
+		echoWetBalanceSlider = new JSlider(JSlider.VERTICAL, WET_BALANCE_MIN,
+				WET_BALANCE_MAX, WET_BALANCE_INIT);
+		echoDelaySlider.setValue(1000);
+		echoWetBalanceSlider.setValue(5);
+		overdriveMaxSlider = new JSlider(JSlider.VERTICAL, OVERDRIVE_MIN, OVERDRIVE_MAX, OVERDRIVE_INIT);
+		overdrivePowerSlider = new JSlider(JSlider.VERTICAL, OVERDRIVE_POWER_MIN,
+				OVERDRIVE_MAX, OVERDRIVE_INIT);
+		overdriveMaxSlider.setValue(25000);
+		overdrivePowerSlider.setValue(1);
 		echoCheckBox = new JCheckBox("Echo");
 		overdriveCheckBox = new JCheckBox("Overdrive");
-		
 		playButton.setSize(pBW, pBH);
 		stopButton.setSize(pBW, pBH);
 		openFileButton.setSize(oBW, oBH);
@@ -215,6 +252,22 @@ public class View extends JFrame {
 	
 	public JSlider getFilter6Slider() {
 		return filter6Slider;
+	}
+	
+	public JSlider getEchoDelaySlider() {
+		return echoDelaySlider;
+	}
+	
+	public JSlider getEchoWetBalanceSlider() {
+		return echoWetBalanceSlider;
+	}
+	
+	public JSlider getOverdriveMaxSlider() {
+		return overdriveMaxSlider;
+	}
+	
+	public JSlider getOverdrivePowerSlider() {
+		return overdrivePowerSlider;
 	}
 	
 	public JCheckBox getEchoCheckBox() {
