@@ -1,5 +1,6 @@
 package equalizer;import com.sun.prism.image.CompoundTexture;
 
+
 public class Overdrive {
 	private short[] inOffsets;
 	private short[] outOffsets;
