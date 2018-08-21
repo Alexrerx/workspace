@@ -19,6 +19,14 @@ public class FFT {
 	double S1im = 0;
 	double ReOffset = 0.0;
 	double ImOffset = 0.0;
+	double S0imF = 0;
+	double S0reF = 0;
+	double WreF = 0;
+	double WimF = 0;
+	double S1reF = 0;
+	double S1imF = 0;
+	double ReOffsetF = 0.0;
+	double ImOffsetF = 0.0;
 	public short[] offsets;
 	double[] spectrAmplitude;
 	final private int step = 100;
@@ -67,17 +75,22 @@ public class FFT {
 		return S1im;
 	}
 	private void setAllFFTOffsets() {
-		for (int counter = 0; counter < MAX_SPECTRUM_FREQUENCY; counter += step) {
-			Wre(counter, offsets.length);
-			Wim(counter, offsets.length);
-			S1re(counter);
-			S1im(counter);
-			S0re(counter);
-			S0im(counter);
-			ReOffset = S0re + (Wre * S1re - Wim * S1im);
-			ImOffset = S0im + (Wre * S1im + Wim * S1re);
+		for (int counter = 0; counter < MAX_SPECTRUM_FREQUENCY / 2; counter += step) {
+			S1reF = S1re(counter);
+			S1imF = S1im(counter);
+			S0reF = S0re(counter);
+			S0imF = S0im(counter);
+			WreF = Wre(counter, offsets.length);
+			WimF = Wim(counter, offsets.length);
+			ReOffset = S0reF + (WreF * S1reF - WimF * S1imF);
+			ImOffset = S0imF + (WreF * S1imF + WimF * S1reF);
 			spectrAmplitude[counter] =
 					Math.sqrt(Math.pow(ReOffset, 2) + Math.pow(ImOffset, 2));
+			ReOffset = S0reF - (WreF * S1reF - WimF * S1imF);
+			ImOffset = S0imF - (WreF * S1imF + WimF * S1reF);
+			spectrAmplitude[counter + MAX_SPECTRUM_FREQUENCY / 2] =
+					Math.sqrt(Math.pow(ReOffset, 2) + Math.pow(ImOffset, 2));
+			
 		}
 		return;
 	}

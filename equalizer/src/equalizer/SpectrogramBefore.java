@@ -34,12 +34,12 @@ public class SpectrogramBefore {
 			}
 			while(aPlayerClone.getThread().isAlive()) {
 				if (!aPlayerClone.spectrAfterIsUpdated() && aPlayerClone.spectrBeforeIsUpdated()) {
-					samplesBuffer = aPlayerClone.getLeftSampledBuffer();
+					samplesBuffer = aPlayerClone.getLeftSampledBufferIn();
 					fft.setOffsets(samplesBuffer);
 					amplitudes = fft.getSpectrumAmpl();
 					spectrPlotInput.clear();
 					for (counter = 0; counter < 22000; counter += 100) {
-						spectrPlotInput.add(counter, 20*Math.log10(Math.abs(Math.ceil(amplitudes[counter]))));
+						spectrPlotInput.add(counter, 20*Math.log10(Math.abs(amplitudes[counter])));
 					}
 					GUIclone.spectrogramBefore.updateUI();
 					System.gc();
