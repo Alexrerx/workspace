@@ -99,8 +99,8 @@ public class AudioPlayer {
 				audioLine.start();
 				while (((number = ais.read(buffer)) != -1)&&(!this.isInterrupted())) {
 					byteToShortArray();
-					spectrAfterUpdated = false;
 					spectrBeforeUpdated = true;
+					spectrAfterUpdated = false;
 					if (isPaused) {
 						for(;;) {
 							try {
@@ -115,14 +115,16 @@ public class AudioPlayer {
 							}
 						}
 					}
-					spectrBeforeUpdated = false;
+					leftSampleBufferOut = leftSampleBufferIn.clone();
+					rightSampleBufferOut = rightSampleBufferIn.clone();
+					System.gc();
 					if (echoActive) {
 						echoEffectLeft.setDelay(echoDelay);
 						echoEffectLeft.setWetBalance(echoWetBalance);
-						leftSampleBufferOut = echoEffectLeft.createEffect(leftSampleBufferIn);
+						leftSampleBufferOut = echoEffectLeft.createEffect(leftSampleBufferOut);
 						echoEffectRight.setDelay(echoDelay);
 						echoEffectRight.setWetBalance(echoWetBalance);
-						rightSampleBufferOut = echoEffectRight.createEffect(rightSampleBufferIn);				
+						rightSampleBufferOut = echoEffectRight.createEffect(rightSampleBufferOut);				
 					}
 					else {
 						echoEffectLeft.endEffect(!echoActive);
@@ -131,56 +133,56 @@ public class AudioPlayer {
 					if (overdriveActive) {
 						overdriveEffect.setOverdriveMax(overdriveMax);
 						overdriveEffect.setOverdrivePower(overdrivePower);
-						leftSampleBufferOut = overdriveEffect.createEffect(leftSampleBufferIn);
-						rightSampleBufferOut = overdriveEffect.createEffect(rightSampleBufferIn);
+						leftSampleBufferOut = overdriveEffect.createEffect(leftSampleBufferOut);
+						rightSampleBufferOut = overdriveEffect.createEffect(rightSampleBufferOut);
 					}
 					filter0Left.setGain(gain[0]);
 					filter0Right.setGain(gain[0]);
-					filter0Left.setInOffsets(leftSampleBufferIn);
+					filter0Left.setInOffsets(leftSampleBufferOut);
 					leftSampleBufferAfterFilter[0] = filter0Left.getFilteredData();
-					filter0Right.setInOffsets(rightSampleBufferIn);
+					filter0Right.setInOffsets(rightSampleBufferOut);
 					rightSampleBufferAfterFilter[0] = filter0Right.getFilteredData();
 					
 					filter1Left.setGain(gain[1]);
 					filter1Right.setGain(gain[1]);
-					filter1Left.setInOffsets(leftSampleBufferIn);
+					filter1Left.setInOffsets(leftSampleBufferOut);
 					leftSampleBufferAfterFilter[1] = filter1Left.getFilteredData();
-					filter1Right.setInOffsets(rightSampleBufferIn);
+					filter1Right.setInOffsets(rightSampleBufferOut);
 					rightSampleBufferAfterFilter[1] = filter1Right.getFilteredData();
 
 					filter2Left.setGain(gain[2]);
 					filter2Right.setGain(gain[2]);
-					filter2Left.setInOffsets(leftSampleBufferIn);
+					filter2Left.setInOffsets(leftSampleBufferOut);
 					leftSampleBufferAfterFilter[2] = filter2Left.getFilteredData();
-					filter2Right.setInOffsets(rightSampleBufferIn);
+					filter2Right.setInOffsets(rightSampleBufferOut);
 					rightSampleBufferAfterFilter[2] = filter2Right.getFilteredData();
 					
 					filter3Left.setGain(gain[3]);
 					filter3Right.setGain(gain[3]);
-					filter3Left.setInOffsets(leftSampleBufferIn);
+					filter3Left.setInOffsets(leftSampleBufferOut);
 					leftSampleBufferAfterFilter[3] = filter3Left.getFilteredData();
-					filter3Right.setInOffsets(rightSampleBufferIn);
+					filter3Right.setInOffsets(rightSampleBufferOut);
 					rightSampleBufferAfterFilter[3] = filter3Right.getFilteredData();
 					
 					filter4Left.setGain(gain[4]);
 					filter4Right.setGain(gain[4]);
-					filter4Left.setInOffsets(leftSampleBufferIn);
+					filter4Left.setInOffsets(leftSampleBufferOut);
 					leftSampleBufferAfterFilter[4] = filter4Left.getFilteredData();
-					filter4Right.setInOffsets(rightSampleBufferIn);
+					filter4Right.setInOffsets(rightSampleBufferOut);
 					rightSampleBufferAfterFilter[4] = filter4Right.getFilteredData();
 					
 					filter5Left.setGain(gain[5]);
 					filter5Right.setGain(gain[5]);
-					filter5Left.setInOffsets(leftSampleBufferIn);
+					filter5Left.setInOffsets(leftSampleBufferOut);
 					leftSampleBufferAfterFilter[5] = filter5Left.getFilteredData();
-					filter5Right.setInOffsets(rightSampleBufferIn);
+					filter5Right.setInOffsets(rightSampleBufferOut);
 					rightSampleBufferAfterFilter[5] = filter5Right.getFilteredData();
 					
 					sumOffsets();
+					spectrBeforeUpdated = false;
+					spectrAfterUpdated = true;
 					shortToByteArray();
 					audioLine.write(buffer, 0, number);
-					spectrAfterUpdated = true;
-					spectrBeforeUpdated = false;
 				}
 			} catch (IOException e) {
 					e.printStackTrace();

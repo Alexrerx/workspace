@@ -27,7 +27,7 @@ public class SpectrogramAfter {
 					}
 				}
 				while(aPlayerClone.getThread().isAlive()) {
-					if (aPlayerClone.spectrAfterIsUpdated() && !aPlayerClone.spectrBeforeIsUpdated()) {
+					if (aPlayerClone.spectrAfterIsUpdated()) {
 						samplesBuffer = aPlayerClone.getLeftSampledBufferOut();
 						fft.setOffsets(samplesBuffer);
 						amplitudes = fft.getSpectrumAmpl();
